@@ -29,4 +29,4 @@ async def stream_announce(ctx):
   await client.change_presence(status=discord.Status.online,activity=activity)
 
 if __name__ == "__main__":
-	client.run("ODk1NzAxMzQxOTY2NTc3NzM0.YV8Y4Q.6wbFc_j_cxzuq3Ot61iRkMCzzIg")
+	client.run(os.environ["SMB_TOKEN"])
