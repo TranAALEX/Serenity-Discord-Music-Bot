@@ -5,6 +5,8 @@ import urllib.request
 import re
 import asyncio
 import pytube
+from bs4 import BeautifulSoup
+import requests
 from discord.ext import commands
 
 #--------------UTILITIES---------------#
@@ -84,6 +86,7 @@ class Play:
 			search_results = self.format_search_results()
 			video, source = self.download_source(search_results)
 			self.ctx.voice_client.play(source,after=lambda e: self.check_queue(e))
+			self.ctx.send(f"Now playing {video.name}")
 		else:
 			pass
 
@@ -97,8 +100,10 @@ class Play:
 			search_results = self.format_search_results()
 			video, source = self.download_source(search_results)
 			self.ctx.voice_client.play(source,after=lambda e: self.check_queue(e))
+			self.ctx.send(f"Now playing {video.name}")
 		else:
 			self.song_queue.append(self.video_ctx)
+			self.ctx.send(f"Song added to queue.")
 
 
 class Skip:
@@ -108,6 +113,7 @@ class Skip:
 
 	async def main(self):
 		self.ctx.voice_client.stop()
+		self.ctx.send("Skipping current song.")
 		
 
 class Stop:
@@ -137,6 +143,36 @@ class Resume:
 	
 	async def main(self):
 		self.ctx.voice_client.resume()
+
+class Queue:
+	def __init__(self,client,ctx,song_queue):
+		self.client = client
+		self.ctx = ctx
+		self.song_queue = song_queue
+
+	def format_search_results(self):
+		for song in self.song_queue:
+			query_string = urllib.parse.urlencode({'search_query': song})
+			html_content = urllib.request.urlopen("http://www.youtube.com/results?" + query_string)
+			search_results = re.findall(r"watch\?v=(\S{11})", html_content.read().decode())
+			yield search_results
+
+	def format_queue(self):
+		queue_string = ""
+		for i,urls in enumerate(self.format_search_results()):
+			page = requests.get(urls)
+			soup = BeautifulSoup(page.content, "html.parser")
+			queue_string += f"{i}. {soup.find('title').text}\n"
+		return queue_string
+    
+
+	def format_embed(self):
+		embed = discord.Embed(title="Queue", desc=self.format_queue)
+		return embed
+
+	async def main(self):
+		embed = self.format_embed()
+		self.ctx.send(embed=embed)
 	
 
 #----------------RUNNER----------------------#
