@@ -207,7 +207,7 @@ class Voice(commands.Cog):
 		
 	@commands.command(aliases=[])
 	async def queue(self,ctx):
-		await Queue(ctx,client,self.song_queue+).main()
+		await Queue(ctx,client,self.song_queue).main()
 
 def setup(client):  
 	client.add_cog(Voice(client))
