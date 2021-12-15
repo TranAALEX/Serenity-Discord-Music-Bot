@@ -3,3 +3,4 @@ PyNaCl
 boto
 pytube
 bs4
+requests
