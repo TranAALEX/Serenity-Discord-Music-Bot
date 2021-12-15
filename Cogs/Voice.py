@@ -172,7 +172,7 @@ class Queue:
 
 	async def main(self):
 		embed = self.format_embed()
-		self.ctx.send(embed=embed)
+		await self.ctx.send(embed=embed)
 	
 
 #----------------RUNNER----------------------#
@@ -204,6 +204,10 @@ class Voice(commands.Cog):
 	@commands.command(aliases=[])
 	async def resume(self,ctx):
 		await Resume(self.client,ctx).main()
+		
+	@commands.command(aliases=[])
+	async def queue(self,ctx):
+		await Queue(ctx,client,self.song_queue+).main()
 
 def setup(client):  
 	client.add_cog(Voice(client))
