@@ -77,7 +77,7 @@ class Play:
 		source = discord.FFmpegPCMAudio(video.url, **self.FFMPEG_OPTIONS)
 		return video, source
 
-	def check_queue(self,e):
+	async def check_queue(self,e):
 		try:
 			self.song_queue.pop(0)
 		except IndexError:
@@ -86,7 +86,7 @@ class Play:
 			search_results = self.format_search_results()
 			video, source = self.download_source(search_results)
 			self.ctx.voice_client.play(source,after=lambda e: self.check_queue(e))
-			self.ctx.send(f"Now playing {video.name}")
+			await self.ctx.send(f"Now playing {video.name}")
 		else:
 			pass
 
@@ -99,11 +99,11 @@ class Play:
 			self.song_queue.append(self.video_ctx)
 			search_results = self.format_search_results()
 			video, source = self.download_source(search_results)
-			self.ctx.voice_client.play(source,after=lambda e: self.check_queue(e))
+			self.ctx.voice_client.play(source,after=lambda e: await self.check_queue(e))
 			self.ctx.send(f"Now playing {video.name}")
 		else:
 			self.song_queue.append(self.video_ctx)
-			self.ctx.send(f"Song added to queue.")
+			await self.ctx.send(f"Song added to queue.")
 
 
 class Skip:
